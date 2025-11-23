@@ -1,0 +1,501 @@
+CREATE DATABASE HotelEstrellaDelValle;
+GO
+
+
+--Creacíon de tablas para HOTEL ESTRELLA DEL VALLE
+CREATE TABLE Clientes (
+    IdCliente INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre VARCHAR(50),
+    Apellidos VARCHAR(80),
+    Telefono VARCHAR(20),
+    Email VARCHAR(100)
+);
+
+CREATE TABLE Habitaciones (
+    IdHabitacion INT IDENTITY(1,1) PRIMARY KEY,
+    Numero INT,
+    Tipo VARCHAR(20),   
+    PrecioPorNoche DECIMAL(10,2)
+);
+
+CREATE TABLE Reservaciones (
+    IdReserva INT IDENTITY(1,1) PRIMARY KEY,
+    IdCliente INT,
+    IdHabitacion INT,
+    FechaEntrada DATE,
+    FechaSalida DATE,
+    CantidadNoches AS DATEDIFF(DAY, FechaEntrada, FechaSalida),
+    MontoTotal DECIMAL(10,2),
+
+    FOREIGN KEY (IdCliente) REFERENCES Clientes(IdCliente),
+    FOREIGN KEY (IdHabitacion) REFERENCES Habitaciones(IdHabitacion)
+);
+
+CREATE TABLE Pagos (
+    IdPago INT IDENTITY(1,1) PRIMARY KEY,
+    IdReserva INT,
+    Monto DECIMAL(10,2),
+    FechaPago DATE,
+    MetodoPago VARCHAR(30),
+
+    FOREIGN KEY (IdReserva) REFERENCES Reservaciones(IdReserva)
+);
+
+
+--- INSERTS PARA CLIENTES
+INSERT INTO Clientes (Nombre, Apellidos, Telefono, Email) VALUES
+('Carlos', 'Ramírez Solano', '8888-1111', 'carlos@gmail.com'),
+('Andrea', 'Mora Jiménez', '8989-2222', 'andrea@gmail.com'),
+('Luis', 'Gutiérrez Castro', '8787-3333', 'luis@hotmail.com'),
+('María', 'Vargas Rojas', '8456-4444', 'maria@yahoo.com'),
+('Pedro', 'Soto Marín', '7012-5555', 'pedro@gmail.com'),
+('Daniela', 'Rosales Gómez', '7201-6666', 'daniela@gmail.com'),
+('Esteban', 'Navarro Chaves', '8899-7777', 'esteban@hotmail.com'),
+('Natalia', 'Badilla Rivera', '8877-8888', 'natalia@gmail.com'),
+('Jorge', 'Córdoba Pineda', '8765-9999', 'jorge@hotmail.com'),
+('Fernanda', 'Hernández Quesada', '8123-0000', 'fernanda@gmail.com');
+
+---INSERTS PARA HABITACIONES
+INSERT INTO Habitaciones (Numero, Tipo, PrecioPorNoche) VALUES
+(101, 'Sencilla', 35000),
+(102, 'Sencilla', 35000),
+(201, 'Doble', 55000),
+(202, 'Doble', 55000),
+(301, 'Suite', 90000),
+(302, 'Suite', 90000),
+(103, 'Sencilla', 35000),
+(203, 'Doble', 55000),
+(303, 'Suite', 90000),
+(304, 'Suite', 90000);
+
+---INSERTS PARA RESERVACIONES
+INSERT INTO Reservaciones (IdCliente, IdHabitacion, FechaEntrada, FechaSalida, MontoTotal) VALUES
+(1, 1, '2025-01-05', '2025-01-07', 2 * 35000),
+(2, 3, '2025-01-10', '2025-01-13', 3 * 55000),
+(3, 5, '2025-01-15', '2025-01-18', 3 * 90000),
+(4, 2, '2025-01-20', '2025-01-22', 2 * 35000),
+(5, 4, '2025-01-25', '2025-01-28', 3 * 55000),
+(6, 6, '2025-02-01', '2025-02-04', 3 * 90000),
+(7, 7, '2025-02-05', '2025-02-06', 1 * 35000),
+(8, 8, '2025-02-10', '2025-02-12', 2 * 55000),
+(9, 9, '2025-02-15', '2025-02-17', 2 * 90000),
+(10, 10, '2025-02-18', '2025-02-21', 3 * 90000),
+(3, 1, '2025-02-22', '2025-02-24', 2 * 35000),
+(5, 3, '2025-02-25', '2025-02-27', 2 * 55000),
+(7, 5, '2025-03-01', '2025-03-04', 3 * 90000),
+(9, 2, '2025-03-05', '2025-03-06', 1 * 35000),
+(1, 4, '2025-03-07', '2025-03-09', 2 * 55000);
+
+---INSERTS PARA PAGOS
+INSERT INTO Pagos (IdReserva, Monto, FechaPago, MetodoPago) VALUES
+(1, 70000, '2025-01-07', 'Tarjeta'),
+(2, 165000, '2025-01-13', 'Efectivo'),
+(3, 270000, '2025-01-18', 'Tarjeta'),
+(4, 70000, '2025-01-22', 'Sinpe Móvil'),
+(5, 165000, '2025-01-28', 'Tarjeta'),
+(6, 270000, '2025-02-04', 'Sinpe Móvil'),
+(7, 35000, '2025-02-06', 'Tarjeta'),
+(8, 110000, '2025-02-12', 'Tarjeta'),
+(9, 180000, '2025-02-17', 'Efectivo'),
+(10, 270000, '2025-02-21', 'Tarjeta'),
+(11, 70000, '2025-02-24', 'Sinpe Móvil'),
+(12, 110000, '2025-02-27', 'Tarjeta'),
+(13, 270000, '2025-03-04', 'Efectivo'),
+(14, 35000, '2025-03-06', 'Sinpe Móvil'),
+(15, 110000, '2025-03-09', 'Tarjeta');
+
+
+-- 4 CONSULTAS BÁSICAS (SELECT, ORDER BY)
+
+-- Listar todos los clientes ordenados por apellido
+
+SELECT * FROM Clientes ORDER BY Apellidos;
+
+-- Listar habitaciones de mayor a menor precio
+
+SELECT * FROM Habitaciones ORDER BY PrecioPorNoche DESC;
+
+-- Mostrar reservaciones realizadas en un rango de fechas
+
+SELECT *FROM Reservaciones WHERE FechaEntrada BETWEEN '2025-01-01' AND '2025-01-31';
+
+-- 5 CONSULTAS AVANZADAS (JOIN, SUBCONSULTAS, WHERE)
+
+-- JOIN entre Reservaciones, Habitaciones y Clientes
+SELECT 
+    R.IdReserva,
+    C.Nombre,
+    C.Apellidos,
+    H.Numero AS Habitacion,
+    H.Tipo,
+    R.FechaEntrada,
+    R.FechaSalida,
+    R.MontoTotal
+FROM Reservaciones R
+INNER JOIN Clientes C ON R.IdCliente = C.IdCliente
+INNER JOIN Habitaciones H ON R.IdHabitacion = H.IdHabitacion;
+
+-- JOIN para pagos por cliente
+SELECT 
+    C.Nombre,
+    C.Apellidos,
+    P.IdPago,
+    P.Monto,
+    P.FechaPago,
+    P.MetodoPago
+FROM Pagos P
+INNER JOIN Reservaciones R ON P.IdReserva = R.IdReserva
+INNER JOIN Clientes C ON R.IdCliente = C.IdCliente;
+
+-- Subconsulta: clientes que han hecho más de una reserva
+SELECT * 
+FROM Clientes
+WHERE IdCliente IN (
+    SELECT IdCliente
+    FROM Reservaciones
+    GROUP BY IdCliente
+    HAVING COUNT(*) > 1
+);
+
+-- Consultas con lógica condicional WHERE
+
+-- Clientes cuyo apellido empieza con 'M'
+SELECT * FROM Clientes WHERE Apellidos LIKE 'M%';
+
+-- Habitaciones con precio mayor a 50,000
+SELECT * FROM Habitaciones WHERE PrecioPorNoche > 50000;
+
+-- Reservaciones entre fechas
+SELECT * 
+FROM Reservaciones 
+WHERE FechaEntrada BETWEEN '2025-02-01' AND '2025-02-28';
+
+
+-- 6 LÓGICA DE CONJUNTOS Y TRANSACCIONES
+
+--  UNION entre clientes activos e inactivos 
+
+ALTER TABLE Clientes ADD Estado VARCHAR(10) DEFAULT 'Activo';
+
+-- Modifica algunos clientes a “Inactivo” para que el UNION funcione:
+
+UPDATE Clientes SET Estado = 'Inactivo' WHERE IdCliente IN (3, 7);
+
+SELECT Nombre, Apellidos, Estado
+FROM Clientes
+WHERE Estado = 'Activo'
+
+UNION
+
+SELECT Nombre, Apellidos, Estado
+FROM Clientes
+WHERE Estado = 'Inactivo';
+
+
+-- INTERSECT: clientes que tienen reservaciones y también pagos
+
+SELECT C.IdCliente
+FROM Clientes C
+INNER JOIN Reservaciones R ON C.IdCliente = R.IdCliente
+
+INTERSECT
+
+SELECT C.IdCliente
+FROM Clientes C
+INNER JOIN Reservaciones R ON C.IdCliente = R.IdCliente
+INNER JOIN Pagos P ON R.IdReserva = P.IdReserva;
+
+-- EXCEPT: habitaciones que no tienen reservación
+
+SELECT IdHabitacion
+FROM Habitaciones
+
+EXCEPT
+
+SELECT IdHabitacion
+FROM Reservaciones;
+
+-- Transacciones
+
+BEGIN TRY
+    BEGIN TRANSACTION;
+
+    -- 1. Nueva reservación
+    INSERT INTO Reservaciones (IdCliente, IdHabitacion, FechaEntrada, FechaSalida, MontoTotal)
+    VALUES (1, 3, '2025-04-01', '2025-04-03', 2 * 55000);
+
+    DECLARE @IdReservaNueva INT = SCOPE_IDENTITY();
+
+    -- 2. Insertar el pago correspondiente
+    INSERT INTO Pagos (IdReserva, Monto, FechaPago, MetodoPago)
+    VALUES (@IdReservaNueva, 110000, '2025-04-03', 'Tarjeta');
+
+    -- 4. Si todo sale bien
+    COMMIT TRANSACTION;
+    PRINT 'Transacción exitosa';
+END TRY
+BEGIN CATCH
+    -- 3. Si algo falla → ROLLBACK
+    ROLLBACK TRANSACTION;
+
+    PRINT 'Error en la transacción: ' + ERROR_MESSAGE();
+END CATCH;
+
+-- Ver si se creó la reservación
+
+SELECT * FROM Reservaciones
+ORDER BY IdReserva DESC;
+
+-- Ver si se creó el pago correspondiente
+
+SELECT * FROM Pagos
+ORDER BY IdPago DESC;
+
+
+
+
+/* manipulación de datos (INSERT, UPDATE, DELETE) */
+/* */
+/* */
+/* */
+
+/* insert */
+UPDATE Habitaciones
+SET PrecioPorNoche = PrecioPorNoche * 1.10
+WHERE Tipo = 'Suite';
+
+/* delete */
+DELETE FROM Pagos
+WHERE IdReserva = 5 
+  AND IdReserva IN (
+        SELECT IdReserva FROM Reservaciones
+        WHERE FechaEntrada > GETDATE()
+    );
+
+/* update */
+DECLARE @IdCliente INT = 2;
+DECLARE @IdHabitacion INT = 3;
+DECLARE @Entrada DATE = '2025-03-20';
+DECLARE @Salida DATE = '2025-03-23';
+DECLARE @Precio DECIMAL(10,2);
+DECLARE @Noches INT;
+DECLARE @Total DECIMAL(10,2);
+
+SELECT @Precio = PrecioPorNoche FROM Habitaciones WHERE IdHabitacion = @IdHabitacion;
+SET @Noches = DATEDIFF(DAY, @Entrada, @Salida);
+SET @Total = @Precio * @Noches;
+
+INSERT INTO Reservaciones (IdCliente, IdHabitacion, FechaEntrada, FechaSalida, MontoTotal)
+VALUES (@IdCliente, @IdHabitacion, @Entrada, @Salida, @Total);
+
+
+/* Procedimientos almacenados */
+
+CREATE PROCEDURE sp_registrarReserva
+    @IdCliente INT,
+    @IdHabitacion INT,
+    @FechaEntrada DATE,
+    @FechaSalida DATE
+AS
+BEGIN
+    DECLARE @Precio DECIMAL(10,2),
+            @Noches INT,
+            @Total DECIMAL(10,2);
+
+    SELECT @Precio = PrecioPorNoche
+    FROM Habitaciones
+    WHERE IdHabitacion = @IdHabitacion;
+
+    SET @Noches = DATEDIFF(DAY, @FechaEntrada, @FechaSalida);
+    SET @Total = @Precio * @Noches;
+
+    INSERT INTO Reservaciones (IdCliente, IdHabitacion, FechaEntrada, FechaSalida, MontoTotal)
+    VALUES (@IdCliente, @IdHabitacion, @FechaEntrada, @FechaSalida, @Total);
+END;
+
+
+
+-----------------------------------------------------------
+
+
+
+CREATE PROCEDURE sp_actualizardatosCliente
+    @IdCliente INT,
+    @Nombre VARCHAR(50),
+    @Apellidos VARCHAR(80),
+    @Telefono VARCHAR(20),
+    @Email VARCHAR(100)
+AS
+BEGIN
+    UPDATE Clientes
+    SET Nombre = @Nombre,
+        Apellidos = @Apellidos,
+        Telefono = @Telefono,
+        Email = @Email
+    WHERE IdCliente = @IdCliente;
+END;
+
+
+----------------------------------------------------------------
+
+
+CREATE PROCEDURE sp_ingresospormes
+    @Ano INT
+AS
+BEGIN
+    SELECT 
+        MONTH(FechaPago) AS Mes,
+        SUM(Monto) AS TotalIngresos
+    FROM Pagos
+    WHERE YEAR(FechaPago) = @Ano
+    GROUP BY MONTH(FechaPago)
+    ORDER BY Mes;
+END;
+
+
+/* funciones */
+
+
+CREATE FUNCTION fn_calcularNoches
+(
+    @Entrada DATE,
+    @Salida DATE
+)
+RETURNS INT
+AS
+BEGIN
+    RETURN DATEDIFF(DAY, @Entrada, @Salida);
+END;
+
+-----------------
+
+
+CREATE FUNCTION fn_calcularMonto
+(
+    @Precio DECIMAL(10,2),
+    @Noches INT
+)
+RETURNS DECIMAL(10,2)
+AS
+BEGIN
+    RETURN @Precio * @Noches;
+END;
+
+
+/* vistas */
+
+
+CREATE VIEW vw_reservasDetalle AS
+SELECT 
+    r.IdReserva,
+    c.Nombre + ' ' + c.Apellidos AS Cliente,
+    h.Numero AS Habitacion,
+    h.Tipo,
+    r.FechaEntrada,
+    r.FechaSalida,
+    r.CantidadNoches,
+    r.MontoTotal
+FROM Reservaciones r
+JOIN Clientes c ON r.IdCliente = c.IdCliente
+JOIN Habitaciones h ON r.IdHabitacion = h.IdHabitacion;
+
+
+------------------------
+
+
+CREATE VIEW vw_pagosPorCliente AS
+SELECT 
+    c.IdCliente,
+    c.Nombre + ' ' + c.Apellidos AS Cliente,
+    SUM(p.Monto) AS TotalPagado
+FROM Pagos p
+JOIN Reservaciones r ON p.IdReserva = r.IdReserva
+JOIN Clientes c ON r.IdCliente = c.IdCliente
+GROUP BY c.IdCliente, c.Nombre, c.Apellidos;
+
+
+
+-------------------
+
+CREATE VIEW vw_ingresosHabitaciones AS
+SELECT
+    h.Numero,
+    h.Tipo,
+    SUM(r.MontoTotal) AS TotalGenerado
+FROM Habitaciones h
+JOIN Reservaciones r ON h.IdHabitacion = r.IdHabitacion
+GROUP BY h.Numero, h.Tipo;
+
+
+/* triggers */
+
+
+CREATE TRIGGER trg_calcularmontosreserva
+ON Reservaciones
+AFTER INSERT
+AS
+BEGIN
+    UPDATE r
+    SET 
+        r.CantidadNoches = DATEDIFF(DAY, r.FechaEntrada, r.FechaSalida),
+        r.MontoTotal = h.PrecioPorNoche * DATEDIFF(DAY, r.FechaEntrada, r.FechaSalida)
+    FROM Reservaciones r
+    JOIN inserted i ON r.IdReserva = i.IdReserva
+    JOIN Habitaciones h ON r.IdHabitacion = h.IdHabitacion;
+END;
+
+--------------------------------------
+
+CREATE TABLE LogHabitaciones (
+    IdLog INT IDENTITY(1,1) PRIMARY KEY,
+    IdHabitacion INT,
+    Usuario VARCHAR(100),
+    Fecha DATETIME,
+    TipoCambio VARCHAR(50)
+);
+
+
+CREATE TRIGGER trg_LogCambiosHabitaciones
+ON Habitaciones
+AFTER UPDATE
+AS
+BEGIN
+    INSERT INTO LogHabitaciones (IdHabitacion, Usuario, Fecha, TipoCambio)
+    SELECT 
+        i.IdHabitacion,
+        SYSTEM_USER,
+        GETDATE(),
+        'Actualización de habitación'
+    FROM inserted i;
+END;
+
+
+/* cte */
+
+WITH CTE_IngresosCliente AS (
+    SELECT 
+        c.IdCliente,
+        c.Nombre + ' ' + c.Apellidos AS Cliente,
+        SUM(p.Monto) AS TotalIngresos
+    FROM Pagos p
+    JOIN Reservaciones r ON p.IdReserva = r.IdReserva
+    JOIN Clientes c ON c.IdCliente = r.IdCliente
+    GROUP BY c.IdCliente, c.Nombre, c.Apellidos
+)
+SELECT * FROM CTE_IngresosCliente;
+
+
+-------------------------------------
+
+
+WITH CTE_Ocupacion AS (
+    SELECT
+        MONTH(FechaEntrada) AS Mes,
+        COUNT(*) AS Reservas
+    FROM Reservaciones
+    GROUP BY MONTH(FechaEntrada)
+)
+SELECT * FROM CTE_Ocupacion ORDER BY Mes;
+
+
+
